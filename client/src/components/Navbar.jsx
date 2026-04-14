@@ -23,6 +23,12 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="flex items-center space-x-6">
+            <Link to="/about" className="text-sm font-medium hover:text-dimo-red transition-colors duration-300">
+              About Us
+            </Link>
+            <Link to="/admin" className="text-sm font-medium hover:text-dimo-red transition-colors duration-300">
+              Admin Portal
+            </Link>
             <Link to="/cart" className="hover:text-dimo-red transition-colors duration-300 relative">
               <ShoppingCart size={24} />
               <span className="absolute -top-2 -right-2 bg-dimo-red text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">

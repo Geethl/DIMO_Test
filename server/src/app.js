@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
-// const productRoutes = require('./routes/productRoutes');
+const productRoutes = require('./routes/productRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -16,7 +17,8 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
-// app.use('/api/products', productRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

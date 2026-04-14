@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import AboutContact from './pages/AboutContact';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -11,6 +13,8 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<AboutContact />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             {/* Other routes will be added here */}
           </Routes>
         </main>
