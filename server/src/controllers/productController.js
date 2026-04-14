@@ -32,4 +32,33 @@ const searchProducts = async (req, res) => {
   }
 };
 
-module.exports = { searchProducts };
+const getProducts = async (req, res) => {
+  try {
+    const { keyword = '', category = '', brand = '' } = req.query;
+
+    const query = {};
+    if (keyword) query.name = { $regex: keyword, $options: 'i' };
+    if (category) query.category = category;
+    if (brand) query.brand = brand;
+
+    const products = await Product.find(query).limit(50);
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching products', error: error.message });
+  }
+};
+
+const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      res.json(product);
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching product', error: error.message });
+  }
+};
+
+module.exports = { searchProducts, getProducts, getProductById };

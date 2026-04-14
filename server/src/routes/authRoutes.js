@@ -1,10 +1,12 @@
 const express = require('express');
-const { registerUser, loginUser, logoutUser } = require('../controllers/authController');
+const { registerUser, loginUser, logoutUser, googleLogin, facebookLogin } = require('../controllers/authController');
 
 const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
+router.post('/google', googleLogin);
+router.post('/facebook', facebookLogin);
 
 module.exports = router;
