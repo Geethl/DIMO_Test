@@ -3,6 +3,7 @@ import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { UploadCloud, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
+import axios from 'axios';
 
 const AdminDashboard = () => {
   const [salesData, setSalesData] = useState([]);
@@ -10,12 +11,25 @@ const AdminDashboard = () => {
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
 
-  useEffect(() => {
-    // Fetch mock sales data
+  const fetchSalesData = () => {
     api.get('/admin/sales')
       .then(res => setSalesData(res.data))
       .catch(err => console.error("Could not fetch admin sales metrics", err));
+  };
+
+  useEffect(() => {
+    // Fetch initial mock sales data
+    fetchSalesData();
   }, []);
+
+  const handleClear = () => {
+    setFile(null);
+    setUploadStatus(null);
+    setSalesData([]);
+    // Reset the actual DOM file input so selecting the same file triggers onChange
+    const fileInput = document.getElementById('csv-upload');
+    if (fileInput) fileInput.value = '';
+  };
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -41,10 +55,17 @@ const AdminDashboard = () => {
     if (e.target.files && e.target.files[0]) {
       handleFile(e.target.files[0]);
     }
+    // Clear the input value so selecting the exact same file again works
+    e.target.value = '';
   };
 
   const handleFile = (uploadedFile) => {
-    if (uploadedFile.type === "text/csv") {
+    // Windows can identify CSV files as application/vnd.ms-excel or have an empty type string, so we also check extension
+    const isCsv = uploadedFile.type === "text/csv" || 
+                  uploadedFile.type === "application/vnd.ms-excel" ||
+                  uploadedFile.name.toLowerCase().endsWith('.csv');
+                  
+    if (isCsv) {
       setFile(uploadedFile);
       setUploadStatus(null);
     } else {
@@ -60,11 +81,15 @@ const AdminDashboard = () => {
     formData.append('file', file);
 
     try {
-      const response = await api.post('/admin/inventory/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      // Use clean axios instance to bypass api.js default application/json Content-Type
+      // which strips the multipart boundary needed by Multer on the backend.
+      const response = await axios.post('http://localhost:5000/api/admin/inventory/upload', formData, {
+        withCredentials: true
       });
       setUploadStatus({ type: 'success', msg: response.data.message });
       setFile(null);
+      // Fetch fresh charts data so user can watch updates
+      fetchSalesData();
     } catch (error) {
       setUploadStatus({ type: 'error', msg: error.response?.data?.message || 'Upload failed' });
     }
@@ -87,7 +112,7 @@ const AdminDashboard = () => {
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
           >
             <h3 className="text-lg font-bold text-dimo-dark mb-6">Monthly Revenue ($)</h3>
-            <div className="h-80">
+            <div className="h-80 w-full overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
@@ -112,7 +137,7 @@ const AdminDashboard = () => {
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
           >
             <h3 className="text-lg font-bold text-dimo-dark mb-6">Equipment vs Parts Sales</h3>
-            <div className="h-80">
+            <div className="h-80 w-full overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
@@ -138,7 +163,9 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-bold text-dimo-dark">Bulk Inventory Update</h3>
               <p className="text-sm text-gray-500">Upload a CSV file to seamlessly update prices and stock arrays.</p>
             </div>
-            <a href="#" className="text-sm text-dimo-blue font-medium hover:underline mt-2 md:mt-0">Download Template</a>
+            <a href="/inventory_template.csv" download="DIMO_Inventory_Template.csv" className="text-sm text-dimo-blue font-medium hover:underline mt-2 md:mt-0">
+              Download Template
+            </a>
           </div>
 
           <form onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
@@ -166,8 +193,16 @@ const AdminDashboard = () => {
                 </div>
              )}
 
-             <div className="mt-6 flex justify-end">
+             <div className="mt-6 flex justify-end space-x-4">
                <button 
+                 type="button"
+                 onClick={handleClear}
+                 className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-8 rounded-lg transition-colors"
+               >
+                 Clear Dashboard
+               </button>
+               <button 
+                 type="button"
                  onClick={submitCsv}
                  disabled={!file || uploadStatus?.type === 'loading'}
                  className="bg-dimo-red hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-md shadow-red-900/20"
