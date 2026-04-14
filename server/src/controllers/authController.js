@@ -29,7 +29,7 @@ const registerUser = async (req, res) => {
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
-      res.status(201).json({ _id: user._id, name: user.name, email: user.email, role: user.role });
+      res.status(201).json({ _id: user._id, name: user.name, email: user.email, role: user.role, address: user.address, avatar: user.avatar, wishlist: user.wishlist });
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }
@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
-      res.json({ _id: user._id, name: user.name, email: user.email, role: user.role });
+      res.json({ _id: user._id, name: user.name, email: user.email, role: user.role, address: user.address, avatar: user.avatar, wishlist: user.wishlist });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -99,7 +99,7 @@ const googleLogin = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     
-    res.json({ _id: user._id, name: user.name, email: user.email, role: user.role });
+    res.json({ _id: user._id, name: user.name, email: user.email, role: user.role, address: user.address, avatar: user.avatar, wishlist: user.wishlist });
   } catch (error) {
     res.status(401).json({ message: 'Google Authentication failed', error: error.message });
   }
@@ -141,10 +141,73 @@ const facebookLogin = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ _id: user._id, name: user.name, email: user.email, role: user.role });
+    res.json({ _id: user._id, name: user.name, email: user.email, role: user.role, address: user.address, avatar: user.avatar, wishlist: user.wishlist });
   } catch (error) {
     res.status(401).json({ message: 'Facebook Authentication failed', error: error.message });
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, googleLogin, facebookLogin };
+const updateUserProfile = async (req, res) => {
+  try {
+    const { userId, name, email, oldPassword, newPassword, address, avatar } = req.body;
+    const user = await User.findById(userId);
+
+    if (user) {
+      if (newPassword) {
+        if (user.password) {
+          if (!oldPassword) {
+             return res.status(400).json({ message: 'Current password is required to set a new password' });
+          }
+          if (!(await user.matchPassword(oldPassword))) {
+             return res.status(401).json({ message: 'Incorrect old password' });
+          }
+        }
+        user.password = newPassword;
+      }
+
+      user.name = name || user.name;
+      user.email = email || user.email;
+      if (address) user.address = address;
+      if (avatar !== undefined) user.avatar = avatar;
+
+      const updatedUser = await user.save();
+      res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        address: updatedUser.address,
+        avatar: updatedUser.avatar,
+        wishlist: updatedUser.wishlist,
+        token: generateToken(updatedUser._id)
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update profile', error: error.message });
+  }
+};
+
+const toggleWishlist = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+    const user = await User.findById(userId);
+    
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const index = user.wishlist.indexOf(productId);
+    if (index > -1) {
+      user.wishlist.splice(index, 1); // Remove
+    } else {
+      user.wishlist.push(productId); // Add
+    }
+
+    await user.save();
+    res.json(user.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update wishlist', error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, googleLogin, facebookLogin, updateUserProfile, toggleWishlist };

@@ -99,9 +99,9 @@ const Cart = () => {
 
               <button 
                 onClick={checkoutHandler}
-                className="w-full bg-dimo-blue hover:bg-blue-800 text-white font-bold py-4 rounded-xl flex justify-center items-center space-x-2 transition-transform transform active:scale-95 shadow-lg shadow-blue-900/20"
+                className="w-full bg-gradient-to-r from-dimo-green to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black py-4 rounded-xl flex justify-center items-center space-x-2 transition-transform transform active:scale-95 shadow-lg shadow-green-500/25 border-b-4 border-emerald-600"
               >
-                <span>Proceed to Checkout</span>
+                <span>Proceed Secure Checkout</span>
                 <ArrowRight size={20} />
               </button>
             </div>

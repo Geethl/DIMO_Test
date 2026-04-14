@@ -8,9 +8,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        'dimo-blue': '#0033A0', // Typical corporate blue
-        'dimo-red': '#E31837', // Typical corporate red
-        'dimo-dark': '#1a1a1a',
+        'dimo-blue': '#0033A0', // Corporate Deep Blue
+        'dimo-green': '#00A651', // Corporate Vibrant Green
+        'dimo-dark': '#0f172a', // Sleeker Dark
+      },
+      animation: {
+        'blob': 'blob 7s infinite',
+      },
+      keyframes: {
+        blob: {
+          '0%': { transform: 'translate(0px, 0px) scale(1)' },
+          '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+          '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+          '100%': { transform: 'translate(0px, 0px) scale(1)' },
+        }
       },
       fontFamily: {
         'sans': ['Inter', 'sans-serif'],

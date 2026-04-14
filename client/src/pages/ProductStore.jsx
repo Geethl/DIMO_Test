@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, ShoppingCart, Loader } from 'lucide-react';
+import { Search, Filter, ShoppingCart, Loader, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useDebounce } from 'use-debounce';
 import api from '../services/api';
@@ -86,8 +86,11 @@ const ProductStore = () => {
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 key={product._id} 
-                className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700 flex flex-col"
+                className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700 flex flex-col relative"
               >
+                <button className="absolute top-4 right-4 z-10 p-2 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm rounded-full hover:text-red-500 transition-colors">
+                  <Heart size={20} />
+                </button>
                 <Link to={`/product/${product._id}`} className="flex-grow">
                   <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center p-4">
                      <span className="text-gray-400 font-bold tracking-widest opacity-50">DIMO IMAGE</span>

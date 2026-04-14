@@ -11,7 +11,7 @@ import api from '../services/api';
 // Normally, this comes from ENV variables
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_placeholder_key_replace_me');
 
-const CheckoutForm = ({ clientSecret, orderItems, totalPrice, userId }) => {
+const CheckoutForm = ({ clientSecret, orderItems, totalPrice, userInfo }) => {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useDispatch();
@@ -40,7 +40,8 @@ const CheckoutForm = ({ clientSecret, orderItems, totalPrice, userId }) => {
           orderItems,
           totalPrice,
           paymentId: paymentIntent.id,
-          userId
+          userId: userInfo?._id,
+          shippingAddress: userInfo?.address || {}
         });
         
         toast.success('Payment successful! Order placed.', { icon: '🎉' });
@@ -73,7 +74,7 @@ const CheckoutForm = ({ clientSecret, orderItems, totalPrice, userId }) => {
       <button
         type="submit"
         disabled={!stripe || processing}
-        className="w-full bg-dimo-blue hover:bg-blue-800 text-white font-bold py-4 rounded-xl flex justify-center items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+        className="w-full bg-gradient-to-r from-dimo-green to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black py-4 rounded-xl flex justify-center items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-green-500/25 border-b-4 border-emerald-600"
       >
         {processing ? <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full" /> : (
           <>
@@ -141,7 +142,7 @@ const Checkout = () => {
           </h2>
           {clientSecret ? (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm clientSecret={clientSecret} orderItems={cartItems} totalPrice={totalPrice} userId={userInfo?._id} />
+              <CheckoutForm clientSecret={clientSecret} orderItems={cartItems} totalPrice={totalPrice} userInfo={userInfo} />
             </Elements>
           ) : (
              <div className="flex justify-center p-10"><div className="animate-spin text-dimo-blue w-10 h-10 border-4 border-t-transparent rounded-full" /></div>

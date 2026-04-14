@@ -30,7 +30,7 @@ const createPaymentIntent = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    const { orderItems, totalPrice, paymentId } = req.body;
+    const { orderItems, totalPrice, paymentId, shippingAddress } = req.body;
     // Assuming simple mock auth logic injects user ID directly, standard systems use middleware to inject req.user
     // For this generic demo, we'll assume the frontend sends the user ID if no standard auth middleware is active in this project router yet
     const { userId } = req.body; 
@@ -45,7 +45,8 @@ const createOrder = async (req, res) => {
       totalPrice,
       isPaid: true,
       paidAt: Date.now(),
-      paymentId
+      paymentId,
+      shippingAddress
     });
 
     const createdOrder = await order.save();

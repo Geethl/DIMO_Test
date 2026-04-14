@@ -8,12 +8,20 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, required: false, sparse: true },
   facebookId: { type: String, required: false, sparse: true },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  avatar: { type: String, default: '' },
+  address: {
+    street: { type: String, default: '' },
+    city: { type: String, default: '' },
+    postalCode: { type: String, default: '' },
+    country: { type: String, default: '' },
+  },
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
 }, { timestamps: true });
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   if (!this.isModified('password') || !this.password) {
-    return next();
+    return;
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);

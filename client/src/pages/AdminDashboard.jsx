@@ -61,10 +61,10 @@ const AdminDashboard = () => {
 
   const handleFile = (uploadedFile) => {
     // Windows can identify CSV files as application/vnd.ms-excel or have an empty type string, so we also check extension
-    const isCsv = uploadedFile.type === "text/csv" || 
-                  uploadedFile.type === "application/vnd.ms-excel" ||
-                  uploadedFile.name.toLowerCase().endsWith('.csv');
-                  
+    const isCsv = uploadedFile.type === "text/csv" ||
+      uploadedFile.type === "application/vnd.ms-excel" ||
+      uploadedFile.name.toLowerCase().endsWith('.csv');
+
     if (isCsv) {
       setFile(uploadedFile);
       setUploadStatus(null);
@@ -98,7 +98,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        
+
         <header className="mb-10">
           <h1 className="text-3xl font-black text-dimo-dark">Executive Dashboard</h1>
           <p className="text-gray-500">Track analytics and manage bulk inventory across all branches.</p>
@@ -107,7 +107,7 @@ const AdminDashboard = () => {
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Revenue Chart */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
           >
@@ -117,8 +117,8 @@ const AdminDashboard = () => {
                 <AreaChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0033A0" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#0033A0" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#0033A0" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#0033A0" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="name" stroke="#9ca3af" />
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
           </motion.div>
 
           {/* Equipment vs Parts */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
           >
@@ -143,7 +143,7 @@ const AdminDashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                   <XAxis dataKey="name" stroke="#9ca3af" />
                   <YAxis stroke="#9ca3af" />
-                  <Tooltip cursor={{fill: '#f9fafb'}} />
+                  <Tooltip cursor={{ fill: '#f9fafb' }} />
                   <Legend />
                   <Bar dataKey="equipment" fill="#0033A0" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="parts" fill="#E31837" radius={[4, 4, 0, 0]} />
@@ -154,9 +154,9 @@ const AdminDashboard = () => {
         </div>
 
         {/* CSV Inventory Upload */}
-        <motion.div 
-           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-           className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mt-8"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mt-8"
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <div>
@@ -169,47 +169,46 @@ const AdminDashboard = () => {
           </div>
 
           <form onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
-             <div 
-               className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors ${dragActive ? 'border-dimo-blue bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}`}
-               onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}
-             >
-                <input type="file" id="csv-upload" accept=".csv" className="hidden" onChange={handleChange} />
-                <label htmlFor="csv-upload" className="cursor-pointer flex flex-col items-center justify-center">
-                  <UploadCloud size={48} className={`mb-4 ${file ? 'text-dimo-blue' : 'text-gray-400'}`} />
-                  <p className="text-dimo-dark font-medium text-lg">
-                    {file ? file.name : "Drag & drop your CSV file here"}
-                  </p>
-                  <p className="text-gray-400 text-sm mt-1">{file ? 'Ready to process' : 'or click to browse'}</p>
-                </label>
-             </div>
+            <div
+              className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors ${dragActive ? 'border-dimo-blue bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}`}
+              onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}
+            >
+              <input type="file" id="csv-upload" accept=".csv" className="hidden" onChange={handleChange} />
+              <label htmlFor="csv-upload" className="cursor-pointer flex flex-col items-center justify-center">
+                <UploadCloud size={48} className={`mb-4 ${file ? 'text-dimo-blue' : 'text-gray-400'}`} />
+                <p className="text-dimo-dark font-medium text-lg">
+                  {file ? file.name : "Drag & drop your CSV file here"}
+                </p>
+                <p className="text-gray-400 text-sm mt-1">{file ? 'Ready to process' : 'or click to browse'}</p>
+              </label>
+            </div>
 
-             {uploadStatus && (
-                <div className={`mt-4 p-4 rounded-lg flex items-center space-x-2 ${
-                  uploadStatus.type === 'error' ? 'bg-red-50 text-red-700' :
-                  uploadStatus.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'
+            {uploadStatus && (
+              <div className={`mt-4 p-4 rounded-lg flex items-center space-x-2 ${uploadStatus.type === 'error' ? 'bg-red-50 text-red-700' :
+                uploadStatus.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'
                 }`}>
-                  {uploadStatus.type === 'error' ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
-                  <span className="font-medium">{uploadStatus.msg}</span>
-                </div>
-             )}
+                {uploadStatus.type === 'error' ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
+                <span className="font-medium">{uploadStatus.msg}</span>
+              </div>
+            )}
 
-             <div className="mt-6 flex justify-end space-x-4">
-               <button 
-                 type="button"
-                 onClick={handleClear}
-                 className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-8 rounded-lg transition-colors"
-               >
-                 Clear Dashboard
-               </button>
-               <button 
-                 type="button"
-                 onClick={submitCsv}
-                 disabled={!file || uploadStatus?.type === 'loading'}
-                 className="bg-dimo-red hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-md shadow-red-900/20"
-               >
-                 {uploadStatus?.type === 'loading' ? 'Processing...' : 'Upload & Sync Database'}
-               </button>
-             </div>
+            <div className="mt-6 flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={handleClear}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-8 rounded-lg transition-colors"
+              >
+                Clear Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={submitCsv}
+                disabled={!file || uploadStatus?.type === 'loading'}
+                className="bg-dimo-red hover:bg-red-300 text-gray-700 font-bold py-3 px-8 rounded-lg transition-colors shadow-md shadow-red-900/20"
+              >
+                {uploadStatus?.type === 'loading' ? 'Processing...' : 'Upload & Sync Database'}
+              </button>
+            </div>
           </form>
         </motion.div>
 
